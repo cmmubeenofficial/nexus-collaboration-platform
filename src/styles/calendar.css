@@ -1,0 +1,109 @@
+/* Custom styles for react-calendar to match the app's design system */
+
+.react-calendar {
+  width: 100%;
+  border: none;
+  font-family: inherit;
+  background: transparent;
+}
+
+.react-calendar__navigation {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.react-calendar__navigation button {
+  min-width: 36px;
+  background: none;
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1f2937;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.react-calendar__navigation button:hover {
+  background-color: #f3f4f6;
+}
+
+.react-calendar__navigation button:disabled {
+  color: #d1d5db;
+}
+
+.react-calendar__month-view__weekdays {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  padding: 0.5rem 0;
+}
+
+.react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none;
+}
+
+.react-calendar__tile {
+  position: relative;
+  padding: 0.625rem 0.25rem;
+  background: none;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.react-calendar__tile:hover {
+  background-color: #eef2ff;
+}
+
+.react-calendar__tile--now {
+  background-color: #f0fdf4 !important;
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.react-calendar__tile--active {
+  background-color: #4f46e5 !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+.react-calendar__tile--active:hover {
+  background-color: #4338ca !important;
+}
+
+.react-calendar__tile--hasActive {
+  background-color: #eef2ff;
+}
+
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: #d1d5db;
+}
+
+/* Dot indicator for days with meetings */
+.meeting-dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin: 2px auto 0;
+}
+
+.meeting-dot--confirmed {
+  background-color: #22c55e;
+}
+
+.meeting-dot--pending {
+  background-color: #f59e0b;
+}

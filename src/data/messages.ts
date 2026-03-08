@@ -91,8 +91,8 @@ export const messages: Message[] = [
 // Helper function to get messages between two users
 export const getMessagesBetweenUsers = (user1Id: string, user2Id: string): Message[] => {
   return messages.filter(
-    message => 
-      (message.senderId === user1Id && message.receiverId === user2Id) || 
+    message =>
+      (message.senderId === user1Id && message.receiverId === user2Id) ||
       (message.senderId === user2Id && message.receiverId === user1Id)
   ).sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 };
@@ -101,7 +101,7 @@ export const getMessagesBetweenUsers = (user1Id: string, user2Id: string): Messa
 export const getConversationsForUser = (userId: string): ChatConversation[] => {
   // Get unique conversation partners
   const conversationPartners = new Set<string>();
-  
+
   messages.forEach(message => {
     if (message.senderId === userId) {
       conversationPartners.add(message.receiverId);
@@ -110,12 +110,12 @@ export const getConversationsForUser = (userId: string): ChatConversation[] => {
       conversationPartners.add(message.senderId);
     }
   });
-  
+
   // Create conversation objects
   return Array.from(conversationPartners).map(partnerId => {
     const conversationMessages = getMessagesBetweenUsers(userId, partnerId);
     const lastMessage = conversationMessages[conversationMessages.length - 1];
-    
+
     return {
       id: `conv-${userId}-${partnerId}`,
       participants: [userId, partnerId],
@@ -133,7 +133,7 @@ export const sendMessage = (newMessage: Omit<Message, 'id' | 'timestamp' | 'isRe
     timestamp: new Date().toISOString(),
     isRead: false
   };
-  
+
   messages.push(message);
   return message;
 };

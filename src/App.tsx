@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 
@@ -24,6 +23,7 @@ import { MessagesPage } from './pages/messages/MessagesPage';
 import { NotificationsPage } from './pages/notifications/NotificationsPage';
 import { DocumentsPage } from './pages/documents/DocumentsPage';
 import { SettingsPage } from './pages/settings/SettingsPage';
+import { MeetingsPage } from './pages/meetings/MeetingsPage';
 import { HelpPage } from './pages/help/HelpPage';
 import { DealsPage } from './pages/deals/DealsPage';
 
@@ -62,6 +62,10 @@ function App() {
           
           <Route path="/messages" element={<DashboardLayout />}>
             <Route index element={<MessagesPage />} />
+          </Route>
+          
+          <Route path="/meetings" element={<DashboardLayout />}>
+            <Route index element={<MeetingsPage />} />
           </Route>
           
           <Route path="/notifications" element={<DashboardLayout />}>

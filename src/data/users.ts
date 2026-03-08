@@ -119,6 +119,22 @@ export const investors: Investor[] = [
     maximumInvestment: '$5M',
     isOnline: true,
     createdAt: '2021-02-12T09:30:00Z'
+  },
+  {
+    id: 'i4',
+    name: 'My Wish',
+    email: 'mywish@ventures.com',
+    role: 'investor',
+    avatarUrl: 'https://ui-avatars.com/api/?name=My+Wish&background=6366f1&color=fff',
+    bio: 'Visionary investor specializing in AI, computer vision, and deep learning startups.',
+    investmentInterests: ['AI/ML', 'Computer Vision', 'Deep Learning'],
+    investmentStage: ['Seed', 'Series A'],
+    portfolioCompanies: ['VisionAI', 'DeepSight'],
+    totalInvestments: 6,
+    minimumInvestment: '$200K',
+    maximumInvestment: '$2M',
+    isOnline: true,
+    createdAt: '2024-01-10T08:00:00Z'
   }
 ];
 
