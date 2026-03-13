@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Menu, X, Bell, MessageCircle, User, LogOut, Building2, CircleDollarSign, Calendar } from 'lucide-react';
+import { Menu, X, Bell, MessageCircle, User, LogOut, Building2, CircleDollarSign, Calendar, Video } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Avatar } from '../ui/Avatar';
 import { Button } from '../ui/Button';
@@ -46,6 +46,11 @@ export const Navbar: React.FC = () => {
       path: user ? '/meetings' : '/login',
     },
     {
+      icon: <Video size={18} />,
+      text: 'Video Call',
+      path: user ? '/video-call' : '/login',
+    },
+    {
       icon: <Bell size={18} />,
       text: 'Notifications',
       path: user ? '/notifications' : '/login',
@@ -82,10 +87,10 @@ export const Navbar: React.FC = () => {
                   <Link
                     key={index}
                     to={link.path}
-                    className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors duration-200"
+                    className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors duration-200 whitespace-nowrap"
                   >
                     <span className="mr-2">{link.icon}</span>
-                    {link.text}
+                    <span className="truncate">{link.text}</span>
                   </Link>
                 ))}
                 
