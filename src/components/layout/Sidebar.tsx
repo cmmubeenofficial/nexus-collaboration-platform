@@ -45,7 +45,7 @@ export const Sidebar: React.FC = () => {
     { to: '/video-call', icon: <Video size={20} />, text: 'Video Call' },
     { to: '/audio-call', icon: <Phone size={20} />, text: 'Audio Call' },
     { to: '/notifications', icon: <Bell size={20} />, text: 'Notifications' },
-    { to: '/documents', icon: <FileText size={20} />, text: 'Documents' },
+    { to: '/documents', icon: <FileText size={20} />, text: 'Document Chamber' },
   ];
   
   const investorItems = [
@@ -57,6 +57,7 @@ export const Sidebar: React.FC = () => {
     { to: '/video-call', icon: <Video size={20} />, text: 'Video Call' },
     { to: '/audio-call', icon: <Phone size={20} />, text: 'Audio Call' },
     { to: '/notifications', icon: <Bell size={20} />, text: 'Notifications' },
+    { to: '/documents', icon: <FileText size={20} />, text: 'Document Chamber' },
     { to: '/deals', icon: <FileText size={20} />, text: 'Deals' },
   ];
   
@@ -101,6 +102,14 @@ export const Sidebar: React.FC = () => {
         </div>
         
         <div className="p-4 border-t border-gray-200">
+          <div className="bg-primary-50 dark:bg-primary-900/10 rounded-xl p-4 mb-4">
+            <p className="text-[10px] font-bold text-primary-600 dark:text-primary-400 uppercase tracking-wider mb-2">Storage Usage</p>
+            <div className="w-full bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full overflow-hidden mb-2">
+              <div className="bg-primary-600 dark:bg-primary-500 h-full w-[72%]"></div>
+            </div>
+            <p className="text-[10px] text-gray-500">14.2 GB of 20 GB used</p>
+          </div>
+          
           <div className="bg-gray-50 rounded-md p-3">
             <p className="text-xs text-gray-600">Need assistance?</p>
             <h4 className="text-sm font-medium text-gray-900 mt-1">Contact Support</h4>
