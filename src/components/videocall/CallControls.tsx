@@ -1,19 +1,23 @@
 import { Mic, MicOff, Video, VideoOff, MonitorUp, PhoneOff, Settings } from 'lucide-react';
 
+export type CallMode = 'video' | 'audio';
+
 interface CallControlsProps {
+  mode?: CallMode;
   isMuted: boolean;
-  isVideoOff: boolean;
-  isScreenSharing: boolean;
+  isVideoOff?: boolean;
+  isScreenSharing?: boolean;
   onToggleMute: () => void;
-  onToggleVideo: () => void;
-  onToggleScreenShare: () => void;
+  onToggleVideo?: () => void;
+  onToggleScreenShare?: () => void;
   onEndCall: () => void;
 }
 
 export const CallControls: React.FC<CallControlsProps> = ({
+  mode = 'video',
   isMuted,
-  isVideoOff,
-  isScreenSharing,
+  isVideoOff = false,
+  isScreenSharing = false,
   onToggleMute,
   onToggleVideo,
   onToggleScreenShare,
@@ -24,36 +28,37 @@ export const CallControls: React.FC<CallControlsProps> = ({
       {/* Mute Button */}
       <button
         onClick={onToggleMute}
-        className={`p-2.5 sm:p-3 rounded-full transition-all duration-200 shadow-md flex items-center justify-center ${
-          isMuted ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gray-700 hover:bg-gray-600 text-white'
-        }`}
+        className={`p-2.5 sm:p-3 rounded-full transition-all duration-200 shadow-md flex items-center justify-center ${isMuted ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gray-700 hover:bg-gray-600 text-white'
+          }`}
         title={isMuted ? "Unmute" : "Mute"}
       >
         {isMuted ? <MicOff size={20} className="sm:w-5 sm:h-5" /> : <Mic size={20} className="sm:w-5 sm:h-5" />}
       </button>
 
       {/* Video Button */}
-      <button
-        onClick={onToggleVideo}
-        className={`p-2.5 sm:p-3 rounded-full transition-all duration-200 shadow-md flex items-center justify-center ${
-          isVideoOff ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gray-700 hover:bg-gray-600 text-white'
-        }`}
-        title={isVideoOff ? "Turn on camera" : "Turn off camera"}
-      >
-        {isVideoOff ? <VideoOff size={20} className="sm:w-5 sm:h-5" /> : <Video size={20} className="sm:w-5 sm:h-5" />}
-      </button>
+      {mode === 'video' && onToggleVideo && (
+        <button
+          onClick={onToggleVideo}
+          className={`p-2.5 sm:p-3 rounded-full transition-all duration-200 shadow-md flex items-center justify-center ${isVideoOff ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gray-700 hover:bg-gray-600 text-white'
+            }`}
+          title={isVideoOff ? "Turn on camera" : "Turn off camera"}
+        >
+          {isVideoOff ? <VideoOff size={20} className="sm:w-5 sm:h-5" /> : <Video size={20} className="sm:w-5 sm:h-5" />}
+        </button>
+      )}
 
       {/* Screen Share */}
-      <button
-        onClick={onToggleScreenShare}
-        className={`p-2.5 sm:p-3 rounded-full transition-all duration-200 shadow-md flex items-center justify-center ${
-          isScreenSharing ? 'bg-indigo-500 hover:bg-indigo-600 text-white' : 'bg-gray-700 hover:bg-gray-600 text-white'
-        }`}
-        title={isScreenSharing ? "Stop sharing" : "Share screen"}
-      >
-        <MonitorUp size={20} className="sm:w-5 sm:h-5" />
-      </button>
-      
+      {mode === 'video' && onToggleScreenShare && (
+        <button
+          onClick={onToggleScreenShare}
+          className={`p-2.5 sm:p-3 rounded-full transition-all duration-200 shadow-md flex items-center justify-center ${isScreenSharing ? 'bg-indigo-500 hover:bg-indigo-600 text-white' : 'bg-gray-700 hover:bg-gray-600 text-white'
+            }`}
+          title={isScreenSharing ? "Stop sharing" : "Share screen"}
+        >
+          <MonitorUp size={20} className="sm:w-5 sm:h-5" />
+        </button>
+      )}
+
       {/* Settings (Mock) */}
       <button
         className="hidden sm:flex p-2.5 sm:p-3 rounded-full transition-all duration-200 shadow-md bg-gray-700 hover:bg-gray-600 text-white items-center justify-center"

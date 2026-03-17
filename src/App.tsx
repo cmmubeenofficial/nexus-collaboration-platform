@@ -32,6 +32,8 @@ import { ChatPage } from './pages/chat/ChatPage';
 
 // Video Call Page
 import { VideoCallPage } from './pages/videocall/VideoCallPage';
+// Audio Call Page
+import { AudioCallPage } from './pages/audiocall/AudioCallPage';
 
 function App() {
   return (
@@ -100,6 +102,11 @@ function App() {
           {/* Video Call Routes */}
           <Route path="/video-call" element={<DashboardLayout />}>
             <Route index element={<VideoCallPage />} />
+          </Route>
+
+          {/* Audio Call Routes */}
+          <Route path="/audio-call" element={<DashboardLayout />}>
+            <Route index element={<AudioCallPage />} />
           </Route>
 
           {/* Redirect root to login */}

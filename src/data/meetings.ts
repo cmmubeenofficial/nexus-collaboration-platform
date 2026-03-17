@@ -15,9 +15,9 @@ export const meetings: Meeting[] = [
     receiverId: 'e1',
     title: 'Strategy Sync with Product Design Team',
     description: 'Would love to sync on the budget for the upcoming campaign next week.',
-    date: '2026-03-15',
-    startTime: '10:00',
-    endTime: '11:00',
+    date: '2026-03-17',
+    startTime: '14:55',
+    endTime: '18:00',
     status: 'confirmed',
     createdAt: '2026-03-08T09:00:00Z'
   },
