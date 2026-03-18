@@ -60,7 +60,8 @@ const initialDocuments: DocumentItem[] = [
     status: 'Signed',
     lastModified: '2 hours ago',
     size: '1.2 MB',
-    fileUrl: 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf'
+    // ✅ This URL serves PDFs with Content-Disposition: inline (no download trigger)
+    fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
   },
   {
     id: 2,
@@ -78,6 +79,7 @@ const initialDocuments: DocumentItem[] = [
     status: 'Draft',
     lastModified: 'Oct 24, 2023',
     size: '450 KB',
+    // ✅ Public URL — Office Online Viewer will handle this
     fileUrl: 'https://calibre-ebook.com/downloads/demos/demo.docx'
   },
   {
@@ -87,6 +89,7 @@ const initialDocuments: DocumentItem[] = [
     status: 'Signed',
     lastModified: 'Sep 15, 2023',
     size: '3.1 MB',
+    // ✅ Public URL — Office Online Viewer will handle this
     fileUrl: 'https://go.microsoft.com/fwlink/?LinkID=521962'
   },
   {
@@ -96,7 +99,7 @@ const initialDocuments: DocumentItem[] = [
     status: 'In Review',
     lastModified: '3 days ago',
     size: '2.4 MB',
-    fileUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+    fileUrl: 'https://www.africau.edu/images/default/sample.pdf'
   },
   {
     id: 6,
@@ -105,6 +108,7 @@ const initialDocuments: DocumentItem[] = [
     status: 'Draft',
     lastModified: '1 week ago',
     size: '680 KB',
+    // No fileUrl — will show the document mock placeholder
   },
 ];
 

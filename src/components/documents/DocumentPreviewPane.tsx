@@ -39,7 +39,11 @@ export const DocumentPreviewPane: React.FC<DocumentPreviewPaneProps> = ({
             <button className="p-1.5 hover:bg-gray-200 rounded text-gray-400 transition-colors" aria-label="Zoom in">
               <ZoomIn size={16} />
             </button>
-            <button className="p-1.5 hover:bg-gray-200 rounded text-gray-400 transition-colors" aria-label="Download">
+            <button 
+              onClick={() => fileUrl && window.open(fileUrl, '_blank')}
+              className="p-1.5 hover:bg-gray-200 rounded text-gray-400 transition-colors" 
+              aria-label="Download"
+            >
               <Download size={16} />
             </button>
           </div>
@@ -67,69 +71,96 @@ export const DocumentPreviewPane: React.FC<DocumentPreviewPaneProps> = ({
                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
               </div>
             </div>
-            <div className="flex-1 bg-gray-600">
+            <div className="flex-1 bg-gray-600 overflow-hidden relative">
               {/* Robust detection for different file types */}
-              {fileUrl && (documentType === 'PDF' || 
-                documentName.toLowerCase().endsWith('.pdf') || 
-                fileUrl.toLowerCase().includes('pdf') ||
-                fileUrl.startsWith('blob:')) ? (
-                <iframe 
-                  src={fileUrl} 
-                  className="w-full h-full border-none bg-white" 
-                  title={documentName}
-                />
-              ) : fileUrl && (
-                documentName.toLowerCase().match(/\.(jpg|jpeg|jgp|png|gif|webp)$/i) || 
-                fileUrl.match(/\.(jpg|jpeg|jgp|png|gif|webp)$/i) || 
-                fileUrl.includes('unsplash')
-              ) ? (
-                <div className="w-full h-full flex items-center justify-center p-4 bg-gray-700">
-                  <img src={fileUrl} alt={documentName} className="max-w-full max-h-full object-contain shadow-2xl bg-white p-2 rounded-sm" />
-                </div>
-              ) : fileUrl && (
-                documentName.toLowerCase().match(/\.(docx|doc|xlsx|xls)$/i)
-              ) ? (
-                /* Use Office Online Viewer for public URLs, otherwise show high-quality placeholder */
-                fileUrl.startsWith('http') ? (
-                  <iframe 
-                    src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`}
-                    className="w-full h-full border-none bg-white font-sans"
-                    title={documentName}
-                  />
-                ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 p-10 overflow-hidden">
-                    <div className="w-full max-w-md bg-white border border-gray-200 shadow-xl rounded-xl p-8 flex flex-col items-center text-center animate-fade-in">
-                       <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-inner ${
-                         documentName.toLowerCase().includes('xlsx') ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'
-                       }`}>
-                          {documentName.toLowerCase().includes('xlsx') ? <FileSpreadsheet size={40} /> : <FileText size={40} />}
-                       </div>
-                       <h3 className="text-xl font-bold text-gray-900 mb-2 truncate w-full px-4">{documentName}</h3>
-                       <p className="text-sm text-gray-500 mb-8 px-4 leading-relaxed">
-                         Office Online prevents direct preview of local files for security. <br/>
-                         Please download the file to view its full content.
-                       </p>
-                       <div className="flex flex-col w-full gap-3">
-                         <a 
-                           href={fileUrl} 
-                           download={documentName} 
-                           className="w-full py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-bold shadow-md transition-all flex items-center justify-center gap-2"
-                         >
-                           <Download size={18} />
-                           Download & View
-                         </a>
-                         <p className="text-[10px] text-gray-400 font-medium uppercase tracking-widest mt-2">Document Authentication Verified</p>
-                       </div>
+              {(() => {
+                const isPdf = documentType === 'PDF' || documentName.toLowerCase().endsWith('.pdf') || (fileUrl?.toLowerCase().includes('pdf'));
+                const isImage = documentName.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/i) || fileUrl?.match(/\.(jpg|jpeg|png|gif|webp)$/i) || fileUrl?.includes('unsplash');
+                const isOffice = documentName.toLowerCase().match(/\.(docx|doc|xlsx|xls)$/i);
+                const isPublic = fileUrl?.startsWith('http') && !fileUrl.includes('localhost');
+
+                if (fileUrl && isPdf) {
+                  return (
+                    <iframe 
+                      src={`${fileUrl}#toolbar=0&navpanes=0`}
+                      className="w-full h-full border-none bg-white"
+                      title={documentName}
+                      style={{ minHeight: '500px' }}
+                    />
+                  );
+                }
+
+                if (fileUrl && isImage) {
+                  return (
+                    <div className="w-full h-full flex items-center justify-center p-4 bg-gray-700">
+                      <img src={fileUrl} alt={documentName} className="max-w-full max-h-full object-contain shadow-2xl bg-white p-2 rounded-sm" />
                     </div>
+                  );
+                }
+
+                if (fileUrl && isOffice) {
+                   if (isPublic) {
+                     return (
+                        <iframe 
+                          src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`}
+                          className="w-full h-full border-none bg-white font-sans"
+                          title={documentName}
+                        />
+                     );
+                   }
+                   // Local Office file (Blob) - Do NOT use iframe to prevent automatic download on selection
+                   return (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 p-6 overflow-hidden">
+                      <div className="w-full max-w-sm bg-white border border-gray-200 shadow-xl rounded-xl p-6 flex flex-col items-center text-center animate-fade-in">
+                         <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-5 shadow-inner ${ 
+                           documentName.toLowerCase().includes('xlsx') ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600' 
+                         }`}>
+                            {documentName.toLowerCase().includes('xlsx') ? <FileSpreadsheet size={32} /> : <FileText size={32} />}
+                         </div>
+                         <h3 className="text-lg font-bold text-gray-900 mb-1 truncate w-full px-2">{documentName}</h3>
+                         <p className="text-xs text-gray-500 mb-6 px-4 leading-relaxed line-clamp-2">
+                           Enterprise document: {documentName}<br/>
+                           (Native Office preview is restricted for local uploads)
+                         </p>
+                         <div className="flex flex-col w-full gap-2">
+                           <a 
+                             href={fileUrl} 
+                             download={documentName} 
+                             className="w-full py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2"
+                           >
+                             <Download size={16} />
+                             Download to View
+                           </a>
+                           <button 
+                             onClick={onSubmitForReview}
+                             className="text-[10px] font-bold text-gray-400 hover:text-primary-600 transition-colors uppercase tracking-widest mt-2"
+                           >
+                             Mark as Reviewed
+                           </button>
+                         </div>
+                         <p className="text-[9px] text-gray-400 font-medium uppercase tracking-widest mt-6">Secure Nexus Document Authentication</p>
+                      </div>
+                    </div>
+                   );
+                }
+
+                return (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 gap-4 p-8">
+                     <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                        <FileText size={32} className="opacity-50" />
+                     </div>
+                     <div className="text-center">
+                        <p className="text-sm font-bold text-gray-600">Preview Not Available</p>
+                        <p className="text-xs mt-1">Format: {documentType}</p>
+                     </div>
+                     {fileUrl && (
+                        <a href={fileUrl} download={documentName} className="mt-2 px-6 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg text-xs font-bold shadow-sm hover:bg-gray-50 transition-colors uppercase">
+                           Download File
+                        </a>
+                     )}
                   </div>
-                )
-              ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 gap-4">
-                   <Download size={48} />
-                   <p className="text-sm text-center">Preview not available for this file type. <br/> <span className="text-xs">Format: {documentType}</span></p>
-                   {fileUrl && <a href={fileUrl} download={documentName} className="px-6 py-2 bg-primary-600 text-white rounded-lg text-xs font-bold shadow-md hover:bg-primary-700 transition-colors uppercase">Download to View</a>}
-                </div>
-              )}
+                );
+              })()}
             </div>
           </div>
         ) : (
