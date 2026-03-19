@@ -424,7 +424,7 @@ export const DocumentsPage: React.FC = () => {
         </div>
 
         {/* Right Column: Preview Pane (Desktop) */}
-        <div className="hidden lg:block w-[400px] xl:w-[440px] shrink-0 sticky top-6 self-start h-[calc(100vh-140px)] min-h-[600px] bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+        <div className="hidden lg:flex flex-col w-[400px] xl:w-[440px] shrink-0 sticky top-6 self-start h-[calc(100vh-140px)] min-h-[600px] bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
           {selectedDoc ? (
              <DocumentPreviewPane
                 key={selectedDoc.id}

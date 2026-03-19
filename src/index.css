@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ── docx-preview: rendered DOCX pages inside the preview pane ── */
+.docx-preview-wrapper {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  min-height: 100%;
+  background: #e5e7eb;
+}
+
+/* Each rendered page */
+.docx-preview-wrapper .docx-wrapper {
+  background: #e5e7eb !important;
+  padding: 16px !important;
+}
+
+.docx-preview-wrapper .docx-wrapper > section.docx {
+  background: #ffffff !important;
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.12) !important;
+  border-radius: 2px !important;
+  margin-bottom: 16px !important;
+  padding: 48px 56px !important;
+}
+
+/* Tables inside DOCX */
+.docx-preview-wrapper table {
+  border-collapse: collapse;
+}
