@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Menu, X, Bell, MessageCircle, User, LogOut, Building2, CircleDollarSign, Calendar } from 'lucide-react';
+import { Menu, X, Bell, MessageCircle, User, LogOut, Building2, CircleDollarSign } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Avatar } from '../ui/Avatar';
 import { Button } from '../ui/Button';
@@ -29,33 +29,21 @@ export const Navbar: React.FC = () => {
     ? `/profile/${user.role}/${user.id}` 
     : '/login';
   
-  const navLinks = [
-    {
-      icon: user?.role === 'entrepreneur' ? <Building2 size={18} /> : <CircleDollarSign size={18} />,
-      text: 'Dashboard',
-      path: dashboardRoute,
-    },
-    {
-      icon: <MessageCircle size={18} />,
-      text: 'Messages',
-      path: user ? '/messages' : '/login',
-    },
-    {
-      icon: <Calendar size={18} />,
-      text: 'Meetings',
-      path: user ? '/meetings' : '/login',
-    },
-    {
-      icon: <Bell size={18} />,
-      text: 'Notifications',
-      path: user ? '/notifications' : '/login',
-    },
-    {
-      icon: <User size={18} />,
-      text: 'Profile',
-      path: profileRoute,
-    }
+  const entrepreneurLinks = [
+    { icon: <Building2 size={18} />, text: 'Dashboard', path: dashboardRoute },
+    { icon: <MessageCircle size={18} />, text: 'Messages', path: '/messages' },
+    { icon: <Bell size={18} />, text: 'Notifications', path: '/notifications' },
+    { icon: <User size={18} />, text: 'Profile', path: profileRoute },
   ];
+
+  const investorLinks = [
+    { icon: <CircleDollarSign size={18} />, text: 'Dashboard', path: dashboardRoute },
+    { icon: <MessageCircle size={18} />, text: 'Messages', path: '/messages' },
+    { icon: <Bell size={18} />, text: 'Notifications', path: '/notifications' },
+    { icon: <User size={18} />, text: 'Profile', path: profileRoute },
+  ];
+
+  const navLinks = user?.role === 'entrepreneur' ? entrepreneurLinks : investorLinks;
   
   return (
     <nav className="bg-white shadow-md">
@@ -154,29 +142,30 @@ export const Navbar: React.FC = () => {
                   </div>
                 </div>
                 
-                <div className="border-t border-gray-200 pt-2">
+                <div className="border-t border-gray-200 pt-2 max-h-[70vh] overflow-y-auto">
+                  {/* Main nav items */}
                   {navLinks.map((link, index) => (
                     <Link
                       key={index}
                       to={link.path}
-                      className="flex items-center px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md"
+                      className="flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      <span className="mr-3">{link.icon}</span>
+                      <span className="mr-3 text-gray-400">{link.icon}</span>
                       {link.text}
                     </Link>
                   ))}
-                  
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      setIsMenuOpen(false);
-                    }}
-                    className="flex w-full items-center px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md"
-                  >
-                    <LogOut size={18} className="mr-3" />
-                    Logout
-                  </button>
+
+                  {/* Logout */}
+                  <div className="mt-2 pt-2 border-t border-gray-100">
+                    <button
+                      onClick={() => { handleLogout(); setIsMenuOpen(false); }}
+                      className="flex w-full items-center px-3 py-2.5 text-sm font-medium text-red-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                    >
+                      <LogOut size={18} className="mr-3" />
+                      Logout
+                    </button>
+                  </div>
                 </div>
               </>
             ) : (

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, PieChart, Filter, Search, PlusCircle, Clock } from 'lucide-react';
+import { Users, PieChart, Filter, Search, PlusCircle, Clock, CreditCard } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Card, CardBody, CardHeader } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
@@ -231,6 +231,20 @@ export const InvestorDashboard: React.FC = () => {
               )}
             </CardBody>
           </Card>
+
+          {/* Wallet Balance Widget */}
+          <Link
+            to="/payments"
+            style={{ textDecoration: 'none', display: 'block', background: 'linear-gradient(135deg,#1e1b4b 0%,#4338ca 100%)', borderRadius: '1rem', padding: '1.125rem 1.25rem', color: '#fff', boxShadow: '0 4px 20px rgba(67,56,202,0.3)', transition: 'transform 0.2s,box-shadow 0.2s' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 10px 30px rgba(67,56,202,0.4)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(67,56,202,0.3)'; }}
+          >
+            <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.6)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.4rem' }}>
+              <CreditCard size={11} /> Wallet Balance
+            </div>
+            <div style={{ fontSize: '1.35rem', fontWeight: 800, letterSpacing: '-0.02em', color: '#fff', marginBottom: '0.2rem' }}>$1,248,500.00</div>
+            <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.55)' }}>3 active deals · View Payments →</div>
+          </Link>
         </div>
       </div>
     </div>
