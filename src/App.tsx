@@ -1,6 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 
+// Auth Protection
+import { RoleProtectedRoute } from './components/auth/RoleProtectedRoute';
+
 // Layouts
 import { DashboardLayout } from './components/layout/DashboardLayout';
 
@@ -45,16 +48,40 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
 
-          {/* Dashboard Routes */}
-          <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route path="entrepreneur" element={<EntrepreneurDashboard />} />
-            <Route path="investor" element={<InvestorDashboard />} />
+          {/* Dashboard Routes - Protected by Role */}
+          <Route path="/dashboard" element={
+            <RoleProtectedRoute allowedRoles={['entrepreneur', 'investor']}>
+              <DashboardLayout />
+            </RoleProtectedRoute>
+          }>
+            <Route path="entrepreneur" element={
+              <RoleProtectedRoute allowedRoles={['entrepreneur']}>
+                <EntrepreneurDashboard />
+              </RoleProtectedRoute>
+            } />
+            <Route path="investor" element={
+              <RoleProtectedRoute allowedRoles={['investor']}>
+                <InvestorDashboard />
+              </RoleProtectedRoute>
+            } />
           </Route>
 
-          {/* Profile Routes */}
-          <Route path="/profile" element={<DashboardLayout />}>
-            <Route path="entrepreneur/:id" element={<EntrepreneurProfile />} />
-            <Route path="investor/:id" element={<InvestorProfile />} />
+          {/* Profile Routes - Protected by Role */}
+          <Route path="/profile" element={
+            <RoleProtectedRoute allowedRoles={['entrepreneur', 'investor']}>
+              <DashboardLayout />
+            </RoleProtectedRoute>
+          }>
+            <Route path="entrepreneur/:id" element={
+              <RoleProtectedRoute allowedRoles={['entrepreneur']}>
+                <EntrepreneurProfile />
+              </RoleProtectedRoute>
+            } />
+            <Route path="investor/:id" element={
+              <RoleProtectedRoute allowedRoles={['investor']}>
+                <InvestorProfile />
+              </RoleProtectedRoute>
+            } />
           </Route>
 
           {/* Feature Routes */}
