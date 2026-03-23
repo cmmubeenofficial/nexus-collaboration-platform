@@ -79,17 +79,50 @@ export const VideoCallPage: React.FC = () => {
     };
   }, [targetUser]);
 
-  // Handle Mute/Video toggles
+  // Handle Mute toggle
   useEffect(() => {
     if (localStreamRef.current) {
       localStreamRef.current.getAudioTracks().forEach(track => {
         track.enabled = !isMuted;
       });
-      localStreamRef.current.getVideoTracks().forEach(track => {
-        track.enabled = !isVideoOff;
-      });
     }
-  }, [isMuted, isVideoOff]);
+  }, [isMuted]);
+
+  // Handle Video toggle - completely stop and reacquire video stream
+  useEffect(() => {
+    const handleVideoToggle = async () => {
+      if (!localStreamRef.current) return;
+
+      if (isVideoOff) {
+        // Stop video tracks completely (not just disable)
+        localStreamRef.current.getVideoTracks().forEach(track => {
+          track.stop();
+          localStreamRef.current!.removeTrack(track);
+        });
+      } else {
+        // Always get fresh video stream when turning on
+        try {
+          const newStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+          const newVideoTrack = newStream.getVideoTracks()[0];
+
+          if (localStreamRef.current && localVideoRef.current) {
+            localStreamRef.current.addTrack(newVideoTrack);
+            localVideoRef.current.srcObject = null; // Force reset
+            localVideoRef.current.srcObject = localStreamRef.current;
+
+            // Force play with loadedmetadata listener
+            localVideoRef.current.onloadedmetadata = () => {
+              localVideoRef.current?.play().catch(console.error);
+            };
+          }
+        } catch (err) {
+          console.error('Failed to reacquire video stream:', err);
+        }
+      }
+    };
+
+    handleVideoToggle();
+  }, [isVideoOff]);
 
   // Call timer
   useEffect(() => {
