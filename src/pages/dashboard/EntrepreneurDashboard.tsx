@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, Bell, Calendar, TrendingUp, AlertCircle, PlusCircle, Clock, CreditCard } from 'lucide-react';
+import { Users, Bell, Calendar, TrendingUp, AlertCircle, PlusCircle, Clock, CreditCard, Video, Phone, FileText } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Card, CardBody, CardHeader } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
@@ -18,7 +18,7 @@ export const EntrepreneurDashboard: React.FC = () => {
   const [collaborationRequests, setCollaborationRequests] = useState<CollaborationRequest[]>([]);
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [recommendedInvestors, setRecommendedInvestors] = useState(investors.slice(0, 3));
-  
+
   useEffect(() => {
     if (user) {
       // Load data
@@ -27,20 +27,20 @@ export const EntrepreneurDashboard: React.FC = () => {
       setMeetings(getMeetingsForUser(user.id));
     }
   }, [user]);
-  
+
   const handleRequestStatusUpdate = (requestId: string, status: 'accepted' | 'rejected') => {
-    setCollaborationRequests(prevRequests => 
-      prevRequests.map(req => 
+    setCollaborationRequests(prevRequests =>
+      prevRequests.map(req =>
         req.id === requestId ? { ...req, status } : req
       )
     );
   };
-  
+
   if (!user) return null;
-  
+
   const pendingRequests = collaborationRequests.filter(req => req.status === 'pending');
   const confirmedMeetings = meetings.filter(m => m.status === 'confirmed');
-  
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex justify-between items-center">
@@ -48,7 +48,7 @@ export const EntrepreneurDashboard: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900">Welcome, {user.name}</h1>
           <p className="text-gray-600">Here's what's happening with your startup today</p>
         </div>
-        
+
         <Link to="/investors">
           <Button
             leftIcon={<PlusCircle size={18} />}
@@ -57,7 +57,7 @@ export const EntrepreneurDashboard: React.FC = () => {
           </Button>
         </Link>
       </div>
-      
+
       {/* Summary cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="bg-primary-50 border border-primary-100">
@@ -73,7 +73,7 @@ export const EntrepreneurDashboard: React.FC = () => {
             </div>
           </CardBody>
         </Card>
-        
+
         <Card className="bg-secondary-50 border border-secondary-100">
           <CardBody>
             <div className="flex items-center">
@@ -89,7 +89,7 @@ export const EntrepreneurDashboard: React.FC = () => {
             </div>
           </CardBody>
         </Card>
-        
+
         <Card className="bg-accent-50 border border-accent-100">
           <CardBody>
             <div className="flex items-center">
@@ -103,7 +103,7 @@ export const EntrepreneurDashboard: React.FC = () => {
             </div>
           </CardBody>
         </Card>
-        
+
         <Card className="bg-success-50 border border-success-100">
           <CardBody>
             <div className="flex items-center">
@@ -118,7 +118,7 @@ export const EntrepreneurDashboard: React.FC = () => {
           </CardBody>
         </Card>
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Collaboration requests */}
         <div className="lg:col-span-2 space-y-4">
@@ -127,7 +127,7 @@ export const EntrepreneurDashboard: React.FC = () => {
               <h2 className="text-lg font-medium text-gray-900">Collaboration Requests</h2>
               <Badge variant="primary">{pendingRequests.length} pending</Badge>
             </CardHeader>
-            
+
             <CardBody>
               {collaborationRequests.length > 0 ? (
                 <div className="space-y-4">
@@ -151,7 +151,7 @@ export const EntrepreneurDashboard: React.FC = () => {
             </CardBody>
           </Card>
         </div>
-        
+
         {/* Sidebar Widgets */}
         <div className="space-y-6">
           <Card>
@@ -195,7 +195,7 @@ export const EntrepreneurDashboard: React.FC = () => {
                 View all
               </Link>
             </CardHeader>
-            
+
             <CardBody className="space-y-4">
               {recommendedInvestors.map(investor => (
                 <InvestorCard
@@ -211,14 +211,56 @@ export const EntrepreneurDashboard: React.FC = () => {
           <Link
             to="/payments"
             style={{ textDecoration: 'none', display: 'block', background: 'linear-gradient(135deg,#1e1b4b 0%,#4338ca 100%)', borderRadius: '1rem', padding: '1.125rem 1.25rem', color: '#fff', boxShadow: '0 4px 20px rgba(67,56,202,0.3)', transition: 'transform 0.2s,box-shadow 0.2s' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform='translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow='0 10px 30px rgba(67,56,202,0.4)'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform=''; (e.currentTarget as HTMLElement).style.boxShadow='0 4px 20px rgba(67,56,202,0.3)'; }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 10px 30px rgba(67,56,202,0.4)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(67,56,202,0.3)'; }}
           >
             <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.6)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.4rem' }}>
               <CreditCard size={11} /> Wallet Balance
             </div>
             <div style={{ fontSize: '1.35rem', fontWeight: 800, letterSpacing: '-0.02em', color: '#fff', marginBottom: '0.2rem' }}>$42,850.00</div>
             <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.55)' }}>↑ 18.4% vs last 30 days · View Payments →</div>
+          </Link>
+
+          {/* Video Call Widget */}
+          <Link
+            to="/video-call"
+            style={{ textDecoration: 'none', display: 'block', background: 'linear-gradient(135deg,#7c3aed 0%,#a855f7 100%)', borderRadius: '1rem', padding: '1.125rem 1.25rem', color: '#fff', boxShadow: '0 4px 20px rgba(124,58,237,0.3)', transition: 'transform 0.2s,box-shadow 0.2s', marginTop: '1rem' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 10px 30px rgba(124,58,237,0.4)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(124,58,237,0.3)'; }}
+          >
+            <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.6)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.4rem' }}>
+              <Video size={11} /> Video Call
+            </div>
+            <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#fff', marginBottom: '0.2rem' }}>Start Video Meeting</div>
+            <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.55)' }}>HD video calls · Join now →</div>
+          </Link>
+
+          {/* Audio Call Widget */}
+          <Link
+            to="/audio-call"
+            style={{ textDecoration: 'none', display: 'block', background: 'linear-gradient(135deg,#059669 0%,#10b981 100%)', borderRadius: '1rem', padding: '1.125rem 1.25rem', color: '#fff', boxShadow: '0 4px 20px rgba(5,150,105,0.3)', transition: 'transform 0.2s,box-shadow 0.2s', marginTop: '1rem' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 10px 30px rgba(5,150,105,0.4)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(5,150,105,0.3)'; }}
+          >
+            <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.6)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.4rem' }}>
+              <Phone size={11} /> Audio Call
+            </div>
+            <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#fff', marginBottom: '0.2rem' }}>Voice Conference</div>
+            <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.55)' }}>Crystal clear audio · Connect →</div>
+          </Link>
+
+          {/* Document Chamber Widget */}
+          <Link
+            to="/documents"
+            style={{ textDecoration: 'none', display: 'block', background: 'linear-gradient(135deg,#0369a1 0%,#0ea5e9 100%)', borderRadius: '1rem', padding: '1.125rem 1.25rem', color: '#fff', boxShadow: '0 4px 20px rgba(3,105,161,0.3)', transition: 'transform 0.2s,box-shadow 0.2s', marginTop: '1rem' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 10px 30px rgba(3,105,161,0.4)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(3,105,161,0.3)'; }}
+          >
+            <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.6)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.4rem' }}>
+              <FileText size={11} /> Document Chamber
+            </div>
+            <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#fff', marginBottom: '0.2rem' }}>Secure Documents</div>
+            <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.55)' }}>24 files stored · Access now →</div>
           </Link>
         </div>
       </div>

@@ -42,7 +42,7 @@ import { AudioCallPage } from './pages/audiocall/AudioCallPage';
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Routes>
           {/* Authentication Routes */}
           <Route path="/login" element={<LoginPage />} />

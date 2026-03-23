@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, PieChart, Filter, Search, PlusCircle, Clock, CreditCard } from 'lucide-react';
+import { Users, PieChart, Filter, Search, PlusCircle, Clock, CreditCard, Video, Phone, FileText } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Card, CardBody, CardHeader } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
@@ -31,7 +31,6 @@ export const InvestorDashboard: React.FC = () => {
 
   // Get collaboration requests sent by this investor
   const sentRequests = getRequestsFromInvestor(user.id);
-  const requestedEntrepreneurIds = sentRequests.map(req => req.entrepreneurId);
 
   // Filter entrepreneurs based on search and industry filters
   const filteredEntrepreneurs = entrepreneurs.filter(entrepreneur => {
@@ -244,6 +243,48 @@ export const InvestorDashboard: React.FC = () => {
             </div>
             <div style={{ fontSize: '1.35rem', fontWeight: 800, letterSpacing: '-0.02em', color: '#fff', marginBottom: '0.2rem' }}>$1,248,500.00</div>
             <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.55)' }}>3 active deals · View Payments →</div>
+          </Link>
+
+          {/* Video Call Widget */}
+          <Link
+            to="/video-call"
+            style={{ textDecoration: 'none', display: 'block', background: 'linear-gradient(135deg,#7c3aed 0%,#a855f7 100%)', borderRadius: '1rem', padding: '1.125rem 1.25rem', color: '#fff', boxShadow: '0 4px 20px rgba(124,58,237,0.3)', transition: 'transform 0.2s,box-shadow 0.2s', marginTop: '1rem' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 10px 30px rgba(124,58,237,0.4)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(124,58,237,0.3)'; }}
+          >
+            <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.6)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.4rem' }}>
+              <Video size={11} /> Video Call
+            </div>
+            <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#fff', marginBottom: '0.2rem' }}>Start Video Meeting</div>
+            <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.55)' }}>HD video calls · Join now →</div>
+          </Link>
+
+          {/* Audio Call Widget */}
+          <Link
+            to="/audio-call"
+            style={{ textDecoration: 'none', display: 'block', background: 'linear-gradient(135deg,#059669 0%,#10b981 100%)', borderRadius: '1rem', padding: '1.125rem 1.25rem', color: '#fff', boxShadow: '0 4px 20px rgba(5,150,105,0.3)', transition: 'transform 0.2s,box-shadow 0.2s', marginTop: '1rem' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 10px 30px rgba(5,150,105,0.4)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(5,150,105,0.3)'; }}
+          >
+            <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.6)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.4rem' }}>
+              <Phone size={11} /> Audio Call
+            </div>
+            <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#fff', marginBottom: '0.2rem' }}>Voice Conference</div>
+            <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.55)' }}>Crystal clear audio · Connect →</div>
+          </Link>
+
+          {/* Document Chamber Widget */}
+          <Link
+            to="/documents"
+            style={{ textDecoration: 'none', display: 'block', background: 'linear-gradient(135deg,#0369a1 0%,#0ea5e9 100%)', borderRadius: '1rem', padding: '1.125rem 1.25rem', color: '#fff', boxShadow: '0 4px 20px rgba(3,105,161,0.3)', transition: 'transform 0.2s,box-shadow 0.2s', marginTop: '1rem' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 10px 30px rgba(3,105,161,0.4)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(3,105,161,0.3)'; }}
+          >
+            <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.6)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.4rem' }}>
+              <FileText size={11} /> Document Chamber
+            </div>
+            <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#fff', marginBottom: '0.2rem' }}>Secure Documents</div>
+            <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.55)' }}>24 files stored · Access now →</div>
           </Link>
         </div>
       </div>
