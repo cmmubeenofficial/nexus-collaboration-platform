@@ -3,19 +3,24 @@
 @tailwind utilities;
 
 /* Prevent horizontal overflow */
-html, body, #root {
+html,
+body,
+#root {
   overflow-x: hidden;
   max-width: 100vw;
 }
 
 /* Hide horizontal scrollbar but allow scrolling */
 .scrollbar-hide {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari and Opera */
+  display: none;
+  /* Chrome, Safari and Opera */
 }
 
 /* ── docx-preview: rendered DOCX pages inside the preview pane ── */
@@ -35,9 +40,9 @@ html, body, #root {
   padding: 16px !important;
 }
 
-.docx-preview-wrapper .docx-wrapper > section.docx {
+.docx-preview-wrapper .docx-wrapper>section.docx {
   background: #ffffff !important;
-  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.12) !important;
+  box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.12) !important;
   border-radius: 2px !important;
   margin-bottom: 16px !important;
   padding: 48px 56px !important;
@@ -46,4 +51,75 @@ html, body, #root {
 /* Tables inside DOCX */
 .docx-preview-wrapper table {
   border-collapse: collapse;
+}
+
+/* React Joyride Custom Styles */
+.react-joyride__tooltip {
+  border-radius: 12px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+  background-color: #ffffff !important;
+  color: #1f2937 !important;
+}
+
+.react-joyride__tooltip h4 {
+  color: #111827 !important;
+  font-weight: 600 !important;
+  font-size: 1.125rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.react-joyride__tooltip p {
+  color: #4b5563 !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+}
+
+.react-joyride__button {
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  padding: 8px 16px !important;
+}
+
+.react-joyride__button--primary {
+  background-color: #3B82F6 !important;
+  color: #ffffff !important;
+}
+
+.react-joyride__button--secondary {
+  color: #6b7280 !important;
+  background-color: transparent !important;
+}
+
+.react-joyride__button--skip {
+  color: #6b7280 !important;
+}
+
+.react-joyride__spotlight {
+  border-radius: 8px !important;
+}
+
+.react-joyride__overlay {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Beacon animation for tour highlights */
+@keyframes joyride-beacon {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.react-joyride__beacon {
+  animation: joyride-beacon 2s infinite !important;
 }

@@ -27,6 +27,7 @@ export const CallControls: React.FC<CallControlsProps> = ({
     <div className="flex items-center justify-center gap-2 sm:gap-3 bg-gray-900/80 backdrop-blur-md px-3 sm:px-5 py-2.5 rounded-2xl shadow-xl border border-gray-700">
       {/* Mute Button */}
       <button
+        data-tour="toggle-mute-btn"
         onClick={onToggleMute}
         className={`p-2.5 sm:p-3 rounded-full transition-all duration-200 shadow-md flex items-center justify-center ${isMuted ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gray-700 hover:bg-gray-600 text-white'
           }`}
@@ -38,6 +39,7 @@ export const CallControls: React.FC<CallControlsProps> = ({
       {/* Video Button */}
       {mode === 'video' && onToggleVideo && (
         <button
+          data-tour="toggle-video-btn"
           onClick={onToggleVideo}
           className={`p-2.5 sm:p-3 rounded-full transition-all duration-200 shadow-md flex items-center justify-center ${isVideoOff ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gray-700 hover:bg-gray-600 text-white'
             }`}
@@ -50,6 +52,7 @@ export const CallControls: React.FC<CallControlsProps> = ({
       {/* Screen Share */}
       {mode === 'video' && onToggleScreenShare && (
         <button
+          data-tour="screen-share-btn"
           onClick={onToggleScreenShare}
           className={`p-2.5 sm:p-3 rounded-full transition-all duration-200 shadow-md flex items-center justify-center ${isScreenSharing ? 'bg-indigo-500 hover:bg-indigo-600 text-white' : 'bg-gray-700 hover:bg-gray-600 text-white'
             }`}
@@ -71,6 +74,7 @@ export const CallControls: React.FC<CallControlsProps> = ({
 
       {/* End Call */}
       <button
+        data-tour="end-call-btn"
         onClick={onEndCall}
         className="p-2.5 sm:p-3 ml-2 rounded-full transition-all duration-200 shadow-lg bg-red-500 hover:bg-red-600 text-white flex items-center justify-center"
         title="End Call"

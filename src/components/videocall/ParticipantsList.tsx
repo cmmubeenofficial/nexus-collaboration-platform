@@ -16,7 +16,7 @@ interface ParticipantsListProps {
 
 export const ParticipantsList: React.FC<ParticipantsListProps> = ({ participants }) => {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col h-full">
+    <div data-tour="participants-list" className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col h-full">
       <div className="border-b border-gray-200 px-6 py-4">
         <h2 className="text-lg font-semibold text-gray-900 flex items-center justify-between">
           Participants
@@ -25,7 +25,7 @@ export const ParticipantsList: React.FC<ParticipantsListProps> = ({ participants
           </span>
         </h2>
       </div>
-      
+
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {participants.map((p, index) => (
           <div key={index} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100">
@@ -43,7 +43,7 @@ export const ParticipantsList: React.FC<ParticipantsListProps> = ({ participants
                 <p className="text-xs text-gray-500 capitalize">{p.user.role}</p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-2 text-gray-400">
               {p.isMuted ? <MicOff size={16} className="text-red-500" /> : <Mic size={16} className={p.isSpeaking ? 'text-green-500' : ''} />}
               {p.isVideoOff ? <VideoOff size={16} className="text-red-500" /> : <Video size={16} />}

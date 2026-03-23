@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Joyride } from 'react-joyride';
 import {
   Wallet, ArrowDownToLine, ArrowUpFromLine, ArrowLeftRight,
   TrendingUp, Clock, CheckCircle2, XCircle, AlertCircle, X,
@@ -7,6 +8,8 @@ import {
   RefreshCw, Download, Star
 } from 'lucide-react';
 import '../../styles/payments.css';
+import { useTour } from '../../context/TourContext';
+import { paymentsTourSteps } from '../../config/tourSteps';
 
 /* ─────────────────────────────────────────────────────── */
 /* MOCK DATA                                               */
@@ -343,9 +346,9 @@ function ActionPanel({ activeTab, onClose, onSuccess, setBalance }: ActionPanelP
               {loading
                 ? <><RefreshCw size={17} className="animate-spin" /> Processing…</>
                 : <>
-                    {tab === 'deposit' ? 'Deposit Funds' : tab === 'withdraw' ? 'Withdraw Funds' : 'Send Transfer'}
-                    <ChevronRight size={17} />
-                  </>
+                  {tab === 'deposit' ? 'Deposit Funds' : tab === 'withdraw' ? 'Withdraw Funds' : 'Send Transfer'}
+                  <ChevronRight size={17} />
+                </>
               }
             </button>
 
@@ -576,11 +579,22 @@ function FundModal({ deal, onClose, onConfirm }: { deal: FundingDeal; onClose: (
 /* ─────────────────────────────────────────────────────── */
 
 export const PaymentsPage: React.FC = () => {
+  const { isRunning, currentTour, hasCompletedTour, startTour } = useTour();
   const [balance, setBalance] = useState(WALLET_BALANCE);
   const [transactions, setTransactions] = useState(TRANSACTIONS);
   const [toast, setToast] = useState<string | null>(null);
   const [fundDeal, setFundDeal] = useState<FundingDeal | null>(null);
   const [activeAction, setActiveAction] = useState<ActiveTab | null>(null);
+
+  // Auto-start payments tour on first visit
+  useEffect(() => {
+    if (!hasCompletedTour('payments') && currentTour !== 'payments') {
+      const timer = setTimeout(() => {
+        startTour('payments');
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [hasCompletedTour, startTour, currentTour]);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -603,202 +617,215 @@ export const PaymentsPage: React.FC = () => {
   };
 
   return (
-    <div className="payments-page">
-
-      {/* ── Page header ── */}
-      <div className="payments-header">
-        <div>
-          <h1>Financial Overview</h1>
-          <p>Manage your assets, funding deals, and transaction history.</p>
-        </div>
-        <button
-          className="stitch-export-btn"
-          onClick={() => showToast('Report exported!')}
-          type="button"
-        >
-          <Download size={15} /> Export Report
-        </button>
-      </div>
-
-      {/* ── Wallet hero card (Stitch desktop style) ── */}
-      <div className="stitch-wallet-card">
-        {/* Left: balance block */}
-        <div className="stitch-wallet-left">
-          <div className="stitch-wallet-label">
-            <Wallet size={13} /> TOTAL WALLET BALANCE
-          </div>
-          <div className="stitch-wallet-balance">{fmt(balance)}</div>
-          <div className="stitch-wallet-sub">
-            <TrendingUp size={13} />
-            <span className="stitch-wallet-sub-positive">{MONTHLY_CHANGE}</span>
-            <span>vs. last 30 days</span>
-          </div>
-
-          {/* ── Action buttons – Desktop style (Stitch exact) ── */}
-          <div className="stitch-wallet-actions">
-            <button
-              className={`stitch-action-btn stitch-action-btn-primary ${activeAction === 'deposit' ? 'active-panel' : ''}`}
-              onClick={() => setActiveAction(activeAction === 'deposit' ? null : 'deposit')}
-              type="button"
-            >
-              <ArrowDownToLine size={15} />
-              <span>Deposit</span>
-            </button>
-            <button
-              className={`stitch-action-btn stitch-action-btn-outline ${activeAction === 'withdraw' ? 'active-panel' : ''}`}
-              onClick={() => setActiveAction(activeAction === 'withdraw' ? null : 'withdraw')}
-              type="button"
-            >
-              <ArrowUpFromLine size={15} />
-              <span>Withdraw</span>
-            </button>
-            <button
-              className={`stitch-action-btn stitch-action-btn-outline ${activeAction === 'transfer' ? 'active-panel' : ''}`}
-              onClick={() => setActiveAction(activeAction === 'transfer' ? null : 'transfer')}
-              type="button"
-            >
-              <ArrowLeftRight size={15} />
-              <span>Transfer</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Right: locked funds + monthly growth (Stitch desktop) */}
-        <div className="stitch-wallet-right">
-          <div className="stitch-wallet-right-card stitch-locked-card">
-            <div className="stitch-rcard-label">LOCKED FUNDS</div>
-            <div className="stitch-rcard-value">{fmt(PENDING_AMOUNT)}</div>
-            <div className="stitch-rcard-sub">Awaiting deal completion</div>
-          </div>
-          <div className="stitch-wallet-right-card stitch-growth-card">
-            <div className="stitch-rcard-label">MONTHLY GROWTH</div>
-            <div className="stitch-rcard-value stitch-growth-value">{MONTHLY_CHANGE}</div>
-            <div className="stitch-rcard-sub">vs. last 30 days</div>
-          </div>
-        </div>
-
-        {/* ── Tablet icon action cards (inside card, 3 cols) ── */}
-        <div className="stitch-tablet-actions">
-          {[
-            { id: 'deposit' as ActiveTab, label: 'Deposit', icon: <ArrowDownToLine size={24} /> },
-            { id: 'transfer' as ActiveTab, label: 'Transfer', icon: <ArrowLeftRight size={24} /> },
-            { id: 'withdraw' as ActiveTab, label: 'Withdraw', icon: <ArrowUpFromLine size={24} /> },
-          ].map(a => (
-            <button
-              key={a.id}
-              type="button"
-              className={`stitch-tablet-action-card ${activeAction === a.id ? 'active' : ''}`}
-              onClick={() => setActiveAction(activeAction === a.id ? null : a.id)}
-            >
-              <div className="stitch-tablet-action-icon">{a.icon}</div>
-              <span className="stitch-tablet-action-label">{a.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Action Panel (slides in below wallet card) ── */}
-      {activeAction && (
-        <ActionPanel
-          activeTab={activeAction}
-          onClose={() => setActiveAction(null)}
-          onSuccess={showToast}
-          setBalance={setBalance}
+    <>
+      {/* Onboarding Tour */}
+      {currentTour === 'payments' && (
+        <Joyride
+          steps={paymentsTourSteps}
+          run={isRunning}
+          continuous
         />
       )}
 
-      {/* ── KPI strip ── */}
-      <div className="payments-kpi-strip">
-        <div className="pay-stat-card">
-          <div className="pay-stat-icon indigo"><TrendingUp size={20} /></div>
-          <div><div className="pay-stat-label">Total Funded</div><div className="pay-stat-value">$1.84M</div></div>
-        </div>
-        <div className="pay-stat-card">
-          <div className="pay-stat-icon green"><CheckCircle2 size={20} /></div>
-          <div><div className="pay-stat-label">Successful Txns</div><div className="pay-stat-value">{transactions.filter(t => t.status === 'success').length}</div></div>
-        </div>
-        <div className="pay-stat-card">
-          <div className="pay-stat-icon amber"><Clock size={20} /></div>
-          <div><div className="pay-stat-label">Pending</div><div className="pay-stat-value">{transactions.filter(t => t.status === 'pending' || t.status === 'processing').length}</div></div>
-        </div>
-        <div className="pay-stat-card">
-          <div className="pay-stat-icon blue"><XCircle size={20} /></div>
-          <div><div className="pay-stat-label">Failed</div><div className="pay-stat-value">{transactions.filter(t => t.status === 'failed').length}</div></div>
-        </div>
-      </div>
+      <div data-tour="payments-container" className="payments-page">
 
-      {/* ── Main grid ── */}
-      <div className="payments-grid">
-
-        {/* LEFT: Transaction History */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <TransactionHistory txns={transactions} />
-        </div>
-
-        {/* RIGHT: Active funding deals + escrow info */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div className="pay-section-card">
-            <div className="pay-section-header">
-              <h2 className="pay-section-title">
-                <Star size={18} className="text-amber-500" style={{ color: '#f59e0b' }} />
-                Active Funding Deals
-              </h2>
-              <Link to="/deals" className="pay-link-btn">View all</Link>
-            </div>
-            <div className="pay-section-body" style={{ paddingTop: 0 }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', paddingTop: '1rem' }}>
-                {FUNDING_DEALS.map(deal => (
-                  <FundingDealCard key={deal.id} deal={deal} onFund={setFundDeal} />
-                ))}
-              </div>
-            </div>
-            {/* New Funding Deal button — Stitch tablet CTA */}
-            <div style={{ padding: '0 1.25rem 1.25rem' }}>
-              <Link
-                to="/deals"
-                className="stitch-new-deal-btn"
-              >
-                <Zap size={16} /> New Funding Deal
-              </Link>
-            </div>
-          </div>
-
-          <div className="pay-section-card" style={{ background: 'linear-gradient(135deg,#fdf4ff,#ede9fe)', border: '1.5px solid #ddd6fe' }}>
-            <div className="pay-section-body">
-              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
-                <div className="pay-stat-icon" style={{ background: '#ddd6fe', color: '#7c3aed', width: 44, height: 44, flexShrink: 0 }}>
-                  <Shield size={20} />
-                </div>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#111827', marginBottom: '0.25rem' }}>Nexus Escrow Protection</div>
-                  <p style={{ fontSize: '0.78rem', color: '#6b7280', lineHeight: 1.5, margin: 0 }}>
-                    All funding deals route through Nexus Escrow. Funds are released only when deal milestones are verified.
-                  </p>
-                  <Link to="/deals" style={{ fontSize: '0.78rem', fontWeight: 600, color: '#7c3aed', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.5rem', textDecoration: 'none' }}>
-                    Learn more <ChevronRight size={13} />
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Fund deal modal ── */}
-      {fundDeal && (
-        <FundModal deal={fundDeal} onClose={() => setFundDeal(null)} onConfirm={handleFundConfirm} />
-      )}
-
-      {/* ── Toast ── */}
-      {toast && (
-        <div className="pay-toast">
-          <div className="pay-toast-icon"><CheckCircle2 size={18} /></div>
+        {/* ── Page header ── */}
+        <div className="payments-header">
           <div>
-            <div className="pay-toast-title">Success</div>
-            <div className="pay-toast-sub">{toast}</div>
+            <h1>Financial Overview</h1>
+            <p>Manage your assets, funding deals, and transaction history.</p>
+          </div>
+          <button
+            className="stitch-export-btn"
+            onClick={() => showToast('Report exported!')}
+            type="button"
+          >
+            <Download size={15} /> Export Report
+          </button>
+        </div>
+
+        {/* ── Wallet hero card (Stitch desktop style) ── */}
+        <div className="stitch-wallet-card">
+          {/* Left: balance block */}
+          <div data-tour="payments-balance" className="stitch-wallet-left">
+            <div className="stitch-wallet-label">
+              <Wallet size={13} /> TOTAL WALLET BALANCE
+            </div>
+            <div className="stitch-wallet-balance">{fmt(balance)}</div>
+            <div className="stitch-wallet-sub">
+              <TrendingUp size={13} />
+              <span className="stitch-wallet-sub-positive">{MONTHLY_CHANGE}</span>
+              <span>vs. last 30 days</span>
+            </div>
+
+            {/* ── Action buttons – Desktop style (Stitch exact) ── */}
+            <div className="stitch-wallet-actions">
+              <button
+                data-tour="payments-deposit"
+                className={`stitch-action-btn stitch-action-btn-primary ${activeAction === 'deposit' ? 'active-panel' : ''}`}
+                onClick={() => setActiveAction(activeAction === 'deposit' ? null : 'deposit')}
+                type="button"
+              >
+                <ArrowDownToLine size={15} />
+                <span>Deposit</span>
+              </button>
+              <button
+                data-tour="payments-withdraw"
+                className={`stitch-action-btn stitch-action-btn-outline ${activeAction === 'withdraw' ? 'active-panel' : ''}`}
+                onClick={() => setActiveAction(activeAction === 'withdraw' ? null : 'withdraw')}
+                type="button"
+              >
+                <ArrowUpFromLine size={15} />
+                <span>Withdraw</span>
+              </button>
+              <button
+                className={`stitch-action-btn stitch-action-btn-outline ${activeAction === 'transfer' ? 'active-panel' : ''}`}
+                onClick={() => setActiveAction(activeAction === 'transfer' ? null : 'transfer')}
+                type="button"
+              >
+                <ArrowLeftRight size={15} />
+                <span>Transfer</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Right: locked funds + monthly growth (Stitch desktop) */}
+          <div className="stitch-wallet-right">
+            <div className="stitch-wallet-right-card stitch-locked-card">
+              <div className="stitch-rcard-label">LOCKED FUNDS</div>
+              <div className="stitch-rcard-value">{fmt(PENDING_AMOUNT)}</div>
+              <div className="stitch-rcard-sub">Awaiting deal completion</div>
+            </div>
+            <div className="stitch-wallet-right-card stitch-growth-card">
+              <div className="stitch-rcard-label">MONTHLY GROWTH</div>
+              <div className="stitch-rcard-value stitch-growth-value">{MONTHLY_CHANGE}</div>
+              <div className="stitch-rcard-sub">vs. last 30 days</div>
+            </div>
+          </div>
+
+          {/* ── Tablet icon action cards (inside card, 3 cols) ── */}
+          <div className="stitch-tablet-actions">
+            {[
+              { id: 'deposit' as ActiveTab, label: 'Deposit', icon: <ArrowDownToLine size={24} /> },
+              { id: 'transfer' as ActiveTab, label: 'Transfer', icon: <ArrowLeftRight size={24} /> },
+              { id: 'withdraw' as ActiveTab, label: 'Withdraw', icon: <ArrowUpFromLine size={24} /> },
+            ].map(a => (
+              <button
+                key={a.id}
+                type="button"
+                className={`stitch-tablet-action-card ${activeAction === a.id ? 'active' : ''}`}
+                onClick={() => setActiveAction(activeAction === a.id ? null : a.id)}
+              >
+                <div className="stitch-tablet-action-icon">{a.icon}</div>
+                <span className="stitch-tablet-action-label">{a.label}</span>
+              </button>
+            ))}
           </div>
         </div>
-      )}
-    </div>
+
+        {/* ── Action Panel (slides in below wallet card) ── */}
+        {activeAction && (
+          <ActionPanel
+            activeTab={activeAction}
+            onClose={() => setActiveAction(null)}
+            onSuccess={showToast}
+            setBalance={setBalance}
+          />
+        )}
+
+        {/* ── KPI strip ── */}
+        <div className="payments-kpi-strip">
+          <div className="pay-stat-card">
+            <div className="pay-stat-icon indigo"><TrendingUp size={20} /></div>
+            <div><div className="pay-stat-label">Total Funded</div><div className="pay-stat-value">$1.84M</div></div>
+          </div>
+          <div className="pay-stat-card">
+            <div className="pay-stat-icon green"><CheckCircle2 size={20} /></div>
+            <div><div className="pay-stat-label">Successful Txns</div><div className="pay-stat-value">{transactions.filter(t => t.status === 'success').length}</div></div>
+          </div>
+          <div className="pay-stat-card">
+            <div className="pay-stat-icon amber"><Clock size={20} /></div>
+            <div><div className="pay-stat-label">Pending</div><div className="pay-stat-value">{transactions.filter(t => t.status === 'pending' || t.status === 'processing').length}</div></div>
+          </div>
+          <div className="pay-stat-card">
+            <div className="pay-stat-icon blue"><XCircle size={20} /></div>
+            <div><div className="pay-stat-label">Failed</div><div className="pay-stat-value">{transactions.filter(t => t.status === 'failed').length}</div></div>
+          </div>
+        </div>
+
+        {/* ── Main grid ── */}
+        <div className="payments-grid">
+
+          {/* LEFT: Transaction History */}
+          <div data-tour="payments-transactions" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <TransactionHistory txns={transactions} />
+          </div>
+
+          {/* RIGHT: Active funding deals + escrow info */}
+          <div data-tour="payments-deals" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div className="pay-section-card">
+              <div className="pay-section-header">
+                <h2 className="pay-section-title">
+                  <Star size={18} className="text-amber-500" style={{ color: '#f59e0b' }} />
+                  Active Funding Deals
+                </h2>
+                <Link to="/deals" className="pay-link-btn">View all</Link>
+              </div>
+              <div className="pay-section-body" style={{ paddingTop: 0 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', paddingTop: '1rem' }}>
+                  {FUNDING_DEALS.map(deal => (
+                    <FundingDealCard key={deal.id} deal={deal} onFund={setFundDeal} />
+                  ))}
+                </div>
+              </div>
+              {/* New Funding Deal button — Stitch tablet CTA */}
+              <div style={{ padding: '0 1.25rem 1.25rem' }}>
+                <Link
+                  to="/deals"
+                  className="stitch-new-deal-btn"
+                >
+                  <Zap size={16} /> New Funding Deal
+                </Link>
+              </div>
+            </div>
+
+            <div className="pay-section-card" style={{ background: 'linear-gradient(135deg,#fdf4ff,#ede9fe)', border: '1.5px solid #ddd6fe' }}>
+              <div className="pay-section-body">
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                  <div className="pay-stat-icon" style={{ background: '#ddd6fe', color: '#7c3aed', width: 44, height: 44, flexShrink: 0 }}>
+                    <Shield size={20} />
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#111827', marginBottom: '0.25rem' }}>Nexus Escrow Protection</div>
+                    <p style={{ fontSize: '0.78rem', color: '#6b7280', lineHeight: 1.5, margin: 0 }}>
+                      All funding deals route through Nexus Escrow. Funds are released only when deal milestones are verified.
+                    </p>
+                    <Link to="/deals" style={{ fontSize: '0.78rem', fontWeight: 600, color: '#7c3aed', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.5rem', textDecoration: 'none' }}>
+                      Learn more <ChevronRight size={13} />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Fund deal modal ── */}
+        {fundDeal && (
+          <FundModal deal={fundDeal} onClose={() => setFundDeal(null)} onConfirm={handleFundConfirm} />
+        )}
+
+        {/* ── Toast ── */}
+        {toast && (
+          <div className="pay-toast">
+            <div className="pay-toast-icon"><CheckCircle2 size={18} /></div>
+            <div>
+              <div className="pay-toast-title">Success</div>
+              <div className="pay-toast-sub">{toast}</div>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 };

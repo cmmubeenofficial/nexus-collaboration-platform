@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Joyride } from 'react-joyride';
+import type { Step } from 'react-joyride';
 import { useAuth } from '../../context/AuthContext';
+import { useTour } from '../../context/TourContext';
 import { CallControls } from '../../components/videocall/CallControls';
 import { ParticipantsList } from '../../components/videocall/ParticipantsList';
 import { users } from '../../data/users';
+import { videoCallTourSteps } from '../../config/tourSteps';
 
 export const VideoCallPage: React.FC = () => {
   const { user } = useAuth();
+  const { isRunning, currentTour, hasCompletedTour, startTour, onTourCallback } = useTour();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const targetUserId = searchParams.get('userId');
@@ -132,6 +137,17 @@ export const VideoCallPage: React.FC = () => {
     }, 1000);
     return () => clearInterval(timer);
   }, [targetUser]);
+
+  // Auto-start tour on first visit
+  useEffect(() => {
+    if (targetUser && !hasCompletedTour('videoCall') && currentTour !== 'videoCall') {
+      // Small delay to ensure elements are rendered
+      const timer = setTimeout(() => {
+        startTour('videoCall');
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [targetUser, hasCompletedTour, startTour, currentTour]);
 
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -272,82 +288,95 @@ export const VideoCallPage: React.FC = () => {
   );
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex flex-col lg:flex-row bg-gray-50 overflow-hidden animate-fade-in relative">
+    <>
+      {/* Onboarding Tour */}
+      {currentTour === 'videoCall' && (
+        <Joyride
+          steps={videoCallTourSteps}
+          run={isRunning}
+          continuous
+        />
+      )}
 
-      {/* Main Video Area */}
-      <div className="flex-1 relative bg-gray-900 flex flex-col justify-center items-center overflow-hidden">
+      <div data-tour="video-call-container" className="h-[calc(100vh-4rem)] flex flex-col lg:flex-row bg-gray-50 overflow-hidden animate-fade-in relative">
 
-        {/* Header Info (Overlay) */}
-        {targetUser && (
-          <div className="absolute top-0 left-0 right-0 p-4 sm:p-6 bg-gradient-to-b from-black/60 to-transparent z-10 flex justify-between items-center text-white">
-            <div>
-              <h1 className="text-lg sm:text-xl font-bold truncate">Meeting with {mockRemoteUser.name}</h1>
-              <p className="text-sm opacity-80">{formatDuration(callDuration)} • Secure Call</p>
+        {/* Main Video Area */}
+        <div className="flex-1 relative bg-gray-900 flex flex-col justify-center items-center overflow-hidden">
+
+          {/* Header Info (Overlay) */}
+          {targetUser && (
+            <div className="absolute top-0 left-0 right-0 p-4 sm:p-6 bg-gradient-to-b from-black/60 to-transparent z-10 flex justify-between items-center text-white">
+              <div>
+                <h1 className="text-lg sm:text-xl font-bold truncate">Meeting with {mockRemoteUser.name}</h1>
+                <p className="text-sm opacity-80">{formatDuration(callDuration)} • Secure Call</p>
+              </div>
             </div>
+          )}
+
+          {/* Remote Video Container */}
+          <div
+            data-tour="remote-video"
+            className={
+              !isLocalMain
+                ? "absolute inset-0 w-full h-full z-0"
+                : "absolute bottom-24 right-4 sm:bottom-6 sm:right-6 w-28 sm:w-48 lg:w-64 aspect-[3/4] sm:aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border-2 border-white/20 z-20 cursor-grab active:cursor-grabbing touch-none select-none"
+            }
+            style={isLocalMain ? { transform: `translate(${pipPosition.x}px, ${pipPosition.y}px)` } : { transform: 'translate(0px, 0px)' }}
+            onPointerDown={isLocalMain ? handlePointerDown : undefined}
+            onPointerMove={isLocalMain ? handlePointerMove : undefined}
+            onPointerUp={isLocalMain ? handlePointerUp : undefined}
+            onPointerCancel={isLocalMain ? handlePointerUp : undefined}
+          >
+            {remoteVideoContent}
+            {isLocalMain && (
+              <div className="absolute bottom-2 left-2 bg-black/50 px-2 py-1 rounded text-xs text-white backdrop-blur-sm pointer-events-none">
+                {mockRemoteUser.name}
+              </div>
+            )}
           </div>
-        )}
 
-        {/* Remote Video Container */}
-        <div
-          className={
-            !isLocalMain
-              ? "absolute inset-0 w-full h-full z-0"
-              : "absolute bottom-24 right-4 sm:bottom-6 sm:right-6 w-28 sm:w-48 lg:w-64 aspect-[3/4] sm:aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border-2 border-white/20 z-20 cursor-grab active:cursor-grabbing touch-none select-none"
-          }
-          style={isLocalMain ? { transform: `translate(${pipPosition.x}px, ${pipPosition.y}px)` } : { transform: 'translate(0px, 0px)' }}
-          onPointerDown={isLocalMain ? handlePointerDown : undefined}
-          onPointerMove={isLocalMain ? handlePointerMove : undefined}
-          onPointerUp={isLocalMain ? handlePointerUp : undefined}
-          onPointerCancel={isLocalMain ? handlePointerUp : undefined}
-        >
-          {remoteVideoContent}
-          {isLocalMain && (
-            <div className="absolute bottom-2 left-2 bg-black/50 px-2 py-1 rounded text-xs text-white backdrop-blur-sm pointer-events-none">
-              {mockRemoteUser.name}
-            </div>
-          )}
+          {/* Local Video Container */}
+          <div
+            data-tour="local-video"
+            className={
+              isLocalMain
+                ? "absolute inset-0 w-full h-full z-0"
+                : "absolute bottom-24 right-4 sm:bottom-6 sm:right-6 w-28 sm:w-48 lg:w-64 aspect-[3/4] sm:aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border-2 border-white/20 z-20 cursor-grab active:cursor-grabbing touch-none select-none"
+            }
+            style={!isLocalMain ? { transform: `translate(${pipPosition.x}px, ${pipPosition.y}px)` } : { transform: 'translate(0px, 0px)' }}
+            onPointerDown={!isLocalMain ? handlePointerDown : undefined}
+            onPointerMove={!isLocalMain ? handlePointerMove : undefined}
+            onPointerUp={!isLocalMain ? handlePointerUp : undefined}
+            onPointerCancel={!isLocalMain ? handlePointerUp : undefined}
+          >
+            {localVideoContent}
+            {!isLocalMain && (
+              <div className="absolute bottom-2 left-2 bg-black/50 px-2 py-1 rounded text-xs text-white backdrop-blur-sm pointer-events-none">
+                You {isMuted && <span className="text-red-400 ml-1">(Muted)</span>}
+              </div>
+            )}
+          </div>
+
+          {/* Call Controls Toolbar */}
+          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-30 w-full px-4 sm:px-0 sm:w-auto">
+            <CallControls
+              isMuted={isMuted}
+              isVideoOff={isVideoOff}
+              isScreenSharing={isScreenSharing}
+              onToggleMute={() => setIsMuted(!isMuted)}
+              onToggleVideo={() => setIsVideoOff(!isVideoOff)}
+              onToggleScreenShare={handleToggleScreenShare}
+              onEndCall={handleEndCall}
+            />
+          </div>
         </div>
 
-        {/* Local Video Container */}
-        <div
-          className={
-            isLocalMain
-              ? "absolute inset-0 w-full h-full z-0"
-              : "absolute bottom-24 right-4 sm:bottom-6 sm:right-6 w-28 sm:w-48 lg:w-64 aspect-[3/4] sm:aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border-2 border-white/20 z-20 cursor-grab active:cursor-grabbing touch-none select-none"
-          }
-          style={!isLocalMain ? { transform: `translate(${pipPosition.x}px, ${pipPosition.y}px)` } : { transform: 'translate(0px, 0px)' }}
-          onPointerDown={!isLocalMain ? handlePointerDown : undefined}
-          onPointerMove={!isLocalMain ? handlePointerMove : undefined}
-          onPointerUp={!isLocalMain ? handlePointerUp : undefined}
-          onPointerCancel={!isLocalMain ? handlePointerUp : undefined}
-        >
-          {localVideoContent}
-          {!isLocalMain && (
-            <div className="absolute bottom-2 left-2 bg-black/50 px-2 py-1 rounded text-xs text-white backdrop-blur-sm pointer-events-none">
-              You {isMuted && <span className="text-red-400 ml-1">(Muted)</span>}
-            </div>
-          )}
+        {/* Participants Sidebar (Desktop) / Bottom Sheet (Mobile could be implemented here) */}
+        <div className="hidden lg:block w-80 bg-white border-l border-gray-200 z-10 shadow-lg shrink-0 overflow-y-auto">
+          <ParticipantsList participants={participants} />
         </div>
 
-        {/* Call Controls Toolbar */}
-        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-30 w-full px-4 sm:px-0 sm:w-auto">
-          <CallControls
-            isMuted={isMuted}
-            isVideoOff={isVideoOff}
-            isScreenSharing={isScreenSharing}
-            onToggleMute={() => setIsMuted(!isMuted)}
-            onToggleVideo={() => setIsVideoOff(!isVideoOff)}
-            onToggleScreenShare={handleToggleScreenShare}
-            onEndCall={handleEndCall}
-          />
-        </div>
       </div>
-
-      {/* Participants Sidebar (Desktop) / Bottom Sheet (Mobile could be implemented here) */}
-      <div className="hidden lg:block w-80 bg-white border-l border-gray-200 z-10 shadow-lg shrink-0 overflow-y-auto">
-        <ParticipantsList participants={participants} />
-      </div>
-
-    </div>
+    </>
   );
 };
